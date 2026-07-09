@@ -1,10 +1,20 @@
 from fastapi import FastAPI
+from fastapi.responses import HTMLResponse
 
 app = FastAPI()
 
-@app.get("/")
+@app.get("/", response_class=HTMLResponse, include_in_schema=False)
 def home():
-    return {"message": "Hello World!"}
+    return """
+    <html>
+        <head>
+            <title>My Website</title>
+        </head>
+        <body>
+            <h1>Hello World!</h1>
+        </body>
+    </html>
+    """
 
 @app.get("/api/posts")
 def get_posts():
