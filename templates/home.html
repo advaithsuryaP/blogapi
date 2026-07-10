@@ -7,6 +7,9 @@
   </head>
   <body>
     <h1>Home page</h1>
-    <p>This is using a template!</p>
+    {% for post in posts %}
+    <h2>{{post.author}}</h2>
+    <p>{{post.content}}</p>
+    {% endfor %}
   </body>
 </html>
