@@ -1,5 +1,7 @@
 from fastapi import FastAPI, Request, HTTPException, status
 from fastapi.templating import Jinja2Templates
+from fastapi.exceptions import RequestValidationError
+from fastapi.responses import JSONResponse
 
 app = FastAPI()
 templates = Jinja2Templates(directory="templates")
@@ -36,3 +38,5 @@ def get_post(post_id: int):
         if post.get("id") == post_id:
             return post
     raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Post not found")
+
+
