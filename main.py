@@ -1,7 +1,5 @@
 from fastapi import FastAPI, Request, HTTPException, status, Depends
 from fastapi.templating import Jinja2Templates
-from fastapi.exceptions import RequestValidationError
-from fastapi.responses import JSONResponse
 from fastapi.staticfiles import StaticFiles
 from starlette.status import HTTP_404_NOT_FOUND
 
@@ -43,6 +41,26 @@ def get_post(post_id: int, db: Annotated[Session, Depends(get_db)]):
     if post:
         return post
     raise HTTPException(status_code = status.HTTP_404_NOT_FOUND, detail = "Post not found")
+
+@app.post("/api/posts", response_model = PostResponse, status_code=status.HTTP_201_CREATED)
+def create_post(post: PostCreate, db: Annotated[Session, Depends(get_db)]):
+    result = db.execute(select(models.User).where(models.User.id == post.user_id))
+    user = result.scalars().first()
+
+    if not user:
+        raise HTTPException(status_code = HTTP_404_NOT_FOUND, detail = "User not found")
+
+    new_post = models.Post(
+        title = post.title,
+        content = post.content,
+        user_id = post.user_id
+    )
+
+    db.add(new_post)
+    db.commit()
+    db.refresh(new_post)
+
+    return new_post        
 
 
 @app.get("/api/users", response_model = list[UserResponse])
@@ -98,24 +116,3 @@ def get_user_posts(user_id: int, db: Annotated[Session, Depends(get_db)]):
     posts = result.scalars().all()
     return posts
 
-
-
-@app.post("/api/posts", response_model = PostResponse, status_code=status.HTTP_201_CREATED)
-def create_post(post: PostCreate, db: Annotated[Session, Depends(get_db)]):
-    result = db.execute(select(models.User).where(models.User.id == post.user_id))
-    user = result.scalars().first()
-
-    if not user:
-        raise HTTPException(status_code = HTTP_404_NOT_FOUND, detail = "User not found")
-
-    new_post = models.Post(
-        title = post.title,
-        content = post.content,
-        user_id = post.user_id
-    )
-
-    db.add(new_post)
-    db.commit()
-    db.refresh(new_post)
-
-    return new_post        
