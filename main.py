@@ -1,7 +1,7 @@
 from fastapi import FastAPI, Request, HTTPException, status, Depends
 from fastapi.templating import Jinja2Templates
 from fastapi.staticfiles import StaticFiles
-from starlette.status import HTTP_404_NOT_FOUND
+from starlette.status import HTTP_204_NO_CONTENT, HTTP_404_NOT_FOUND
 
 from schemas import PostCreate, PostResponse, UserCreate, UserResponse, PostUpdate
 
@@ -99,7 +99,18 @@ def create_post(post: PostCreate, db: Annotated[Session, Depends(get_db)]):
     db.commit()
     db.refresh(new_post)
 
-    return new_post        
+    return new_post
+
+@app.delete("/api/posts/{post_id}", status_code = HTTP_204_NO_CONTENT)
+def get_post(post_id: int, db: Annotated[Session, Depends(get_db)]):
+    result = db.execute(select(models.Post).where(models.Post.id== post_id))
+    post = result.scalars().first()
+
+    if not post:
+        raise HTTPException(status_code = status.HTTP_404_NOT_FOUND, detail = "Post not found")
+
+    db.delete(post)
+    db.commit()  
 
 
 @app.get("/api/users", response_model = list[UserResponse])
