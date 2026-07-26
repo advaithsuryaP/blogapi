@@ -114,7 +114,7 @@ def get_post(post_id: int, db: Annotated[Session, Depends(get_db)]):
 
 
 @app.get("/api/users", response_model = list[UserResponse])
-def get_posts(request: Request, db: Annotated[Session, Depends(get_db)]):
+def get_users(request: Request, db: Annotated[Session, Depends(get_db)]):
     result = db.execute(select(models.User))
     users = result.scalars().all()
     return users
@@ -143,9 +143,9 @@ def create_user(user: UserCreate, db: Annotated[Session, Depends(get_db)]):
     db.refresh(new_user)
 
     return new_user
-    
 
-@app.get("/api/users", response_model = list[UserResponse])
+
+@app.get("/api/users/{user_id}", response_model = UserResponse)
 def get_user(user_id: int, db: Annotated[Session, Depends(get_db)]):
     result = db.execute(select(models.User).where(models.User.id== user_id))
     user = result.scalars().first()
