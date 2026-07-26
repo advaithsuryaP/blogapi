@@ -37,7 +37,7 @@ def get_posts(request: Request, db: Annotated[Session, Depends(get_db)]):
 
 @app.get("/api/posts/{post_id}", response_model = PostResponse)
 def get_post(post_id: int, db: Annotated[Session, Depends(get_db)]):
-    result = db.execute(select(models.User).where(models.Post.id== post_id))
+    result = db.execute(select(models.Post).where(models.Post.id== post_id))
     post = result.scalars().first()
 
     if post:
