@@ -49,6 +49,7 @@ source = { virtual = "." }
 dependencies = [
     { name = "aiosqlite" },
     { name = "fastapi", extra = ["standard"] },
+    { name = "greenlit" },
     { name = "sqlalchemy" },
 ]
 
@@ -56,6 +57,7 @@ dependencies = [
 requires-dist = [
     { name = "aiosqlite", specifier = ">=0.22.1" },
     { name = "fastapi", extras = ["standard"], specifier = ">=0.128.0" },
+    { name = "greenlit", specifier = ">=0.3.0" },
     { name = "sqlalchemy", specifier = ">=2.0.51" },
 ]
 
@@ -310,6 +312,18 @@ wheels = [
     { url = "https://files.pythonhosted.org/packages/54/70/50de47a488f14df260b50ae34fb5d56016e308b098eab02c878b5223c26a/greenlet-3.5.3-cp315-cp315t-musllinux_1_2_x86_64.whl", hash = "sha256:e44da2f5bbdaabaf7d80b73dbb430c7035771e9f244e3c8b769715c9d8fa0a16", size = 1681159, upload-time = "2026-06-26T18:31:52.986Z" },
     { url = "https://files.pythonhosted.org/packages/a7/13/1055e1dda7882073eda533e2b96c62e55bbd2db7fda6d5ece992febc7071/greenlet-3.5.3-cp315-cp315t-win_amd64.whl", hash = "sha256:8ff8bed3e3baa20a3ea261ce00526f1898ad4801d4886fd2220580ee0ad8fadf", size = 244007, upload-time = "2026-06-26T18:22:04.353Z" },
     { url = "https://files.pythonhosted.org/packages/b4/0d/ca7d15afbdc397e3401134c9e1800d51d12b829661786187a4ad08fe484f/greenlet-3.5.3-cp315-cp315t-win_arm64.whl", hash = "sha256:b7068bd09f761f3f5b4d214c2bed063186b2a86148c740b3873e3f56d79bac31", size = 242586, upload-time = "2026-06-26T18:23:37.93Z" },
+]
+
+[[package]]
+name = "greenlit"
+version = "0.3.0"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "rich" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/d6/ba/14938053fb5fe1cd470b3c0bf6072f2ab05a1b34c95838e375819d9ced33/greenlit-0.3.0.tar.gz", hash = "sha256:ac6dabc12fad5637f5f9a9828e1e76349919d0b043dc6a83ec7e4d5d046436c2", size = 67468, upload-time = "2026-07-18T12:43:10.511Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/03/f5/740361e92c773373a58952c21eae16baba9828c8c88b5f3e5f86fac32e79/greenlit-0.3.0-py3-none-any.whl", hash = "sha256:6478cdde3c121da1994f10c19f86aa15c360bdf2187e179bee5a2cd0e5060d9a", size = 41216, upload-time = "2026-07-18T12:43:09.304Z" },
 ]
 
 [[package]]
