@@ -182,9 +182,24 @@ def patch_user(user_id: int, user_data: UserUpdate, db: Annotated[Session, Depen
     if not user:
         raise HTTPException(status_code = status.HTTP_404_NOT_FOUND, detail = "User not found")
 
-    update_data = user_data.model_dump(exclude_unset = True)
-    for field, value in update_data.items():
-        setattr(user, field, value)        
+    if user_data.username is not None and user.username != user.username:
+        username_result = db.execute(select(models.User).where(models.User.username == user_data.username))
+        existing_username = username_result.scalars().first()
+        if existing_username:
+            raise HTTPException(status_code = status.HTTP_400_BAD_REQUEST, detail = "Username already exists")
+    
+    if user_data.email is not None and user.email != user.email:
+        email_result = db.execute(select(models.User).where(models.User.email == user_data.email))
+        existing_email = email_result.scalars().first()
+        if existing_email:
+            raise HTTPException(status_code = status.HTTP_400_BAD_REQUEST, detail = "Email already registered")
+
+    if user_data.username is not None:
+        user.username = user_data.username      
+    if user_data.email is not None:
+        user.email = user_data.email
+    if user_data.image_file is not None:
+        user.image_file = user_data.image_file
 
     db.commit()
     db.refresh(user)
