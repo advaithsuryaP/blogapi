@@ -153,27 +153,6 @@ def get_user(user_id: int, db: Annotated[Session, Depends(get_db)]):
         return user
     raise HTTPException(status_code = status.HTTP_404_NOT_FOUND, detail = "User not found")
 
-@app.put("/api/users/{user_id}", response_model = UserResponse)
-def update_user(user_id: int, user_data: UserCreate, db: Annotated[Session, Depends(get_db)]):
-    result = db.execute(select(models.User).where(models.User.id == user_id))
-    user = result.scalars().first()
-
-    if not user:
-        raise HTTPException(status_code = status.HTTP_404_NOT_FOUND, detail = "User not found")
-
-    email_result = db.execute(select(models.User).where(models.User.email == user_data.email))
-    existing_email = email_result.scalars().first()
-
-    if existing_email:
-        raise HTTPException(status.HTTP_400_BAD_REQUEST, detail = "Email already exists")    
-    
-    user.username = user_data.username
-    user.email = user_data.email
-
-    db.commit()
-    db.refresh(user)
-    return user
-
 @app.patch("/api/users/{user_id}", response_model = UserResponse)
 def patch_user(user_id: int, user_data: UserUpdate, db: Annotated[Session, Depends(get_db)]):
     result = db.execute(select(models.User).where(models.User.id == user_id))
