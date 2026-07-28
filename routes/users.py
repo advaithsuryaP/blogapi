@@ -3,7 +3,6 @@ from typing import Annotated
 from fastapi import APIRouter, Depends, HTTPException, Request, status
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
-from starlette.status import HTTP_204_NO_CONTENT, HTTP_404_NOT_FOUND
 
 import models
 from database import get_db
@@ -84,7 +83,7 @@ async def patch_user(user_id: int, user_data: UserUpdate, db: Annotated[AsyncSes
     return user
 
 
-@router.delete("/{user_id}", status_code = HTTP_204_NO_CONTENT)
+@router.delete("/{user_id}", status_code = status.HTTP_204_NO_CONTENT)
 async def delete_user(user_id: int, db: Annotated[AsyncSession, Depends(get_db)]):
     result = await db.execute(select(models.User).where(models.User.id == user_id))
     user = result.scalars().first()
@@ -101,7 +100,7 @@ async def get_user_posts(user_id: int, db: Annotated[AsyncSession, Depends(get_d
     user = result.scalars().first()
 
     if not user:
-        raise HTTPException(status_code = HTTP_404_NOT_FOUND, detail = "User not found")
+        raise HTTPException(status_code = status.HTTP_404_NOT_FOUND, detail = "User not found")
     
     result = await db.execute(select(models.Post).options(selectinload(models.Post.author)).where(models.Post.user_id == user_id))
     posts = result.scalars().all()

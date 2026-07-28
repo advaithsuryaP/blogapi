@@ -6,6 +6,8 @@ from contextlib import asynccontextmanager
 
 from database import Base, engine
 
+from routes import posts, users
+
 @asynccontextmanager
 async def lifespan(_app: FastAPI):
     # Startup
@@ -21,6 +23,9 @@ app.mount("/static", StaticFiles(directory = "static"), name = "static")
 app.mount("/media", StaticFiles(directory = "media"), name = "media")
 
 templates = Jinja2Templates(directory="templates")
+
+app.include_router(posts.router, prefix = "/api/posts", tags = ["posts"])
+app.include_router(users.router, prefix = "/api/users", tags = ["users"])
 
 @app.get("/", include_in_schema = False)
 def home():

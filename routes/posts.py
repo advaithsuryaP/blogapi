@@ -1,9 +1,9 @@
-from sqlalchemy import select
 from typing import Annotated
+
 from fastapi import APIRouter, Depends, HTTPException, Request, status
+from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
-from starlette.status import HTTP_204_NO_CONTENT, HTTP_404_NOT_FOUND
 
 import models
 from database import get_db
@@ -11,13 +11,13 @@ from schemas import PostCreate, PostResponse, PostUpdate
 
 router = APIRouter()
 
-router.post("", response_model = PostResponse, status_code=status.HTTP_201_CREATED)
+@router.post("", response_model = PostResponse, status_code=status.HTTP_201_CREATED)
 async def create_post(post: PostCreate, db: Annotated[AsyncSession, Depends(get_db)]):
     result = await db.execute(select(models.User).where(models.User.id == post.user_id))
     user = result.scalars().first()
 
     if not user:
-        raise HTTPException(status_code = HTTP_404_NOT_FOUND, detail = "User not found")
+        raise HTTPException(status_code = status.HTTP_404_NOT_FOUND, detail = "User not found")
 
     new_post = models.Post(
         title = post.title,
@@ -31,13 +31,14 @@ async def create_post(post: PostCreate, db: Annotated[AsyncSession, Depends(get_
 
     return new_post
 
-router.get("", response_model = list[PostResponse])
+@router.get("", response_model = list[PostResponse])
 async def get_posts(request: Request, db: Annotated[AsyncSession, Depends(get_db)]):
+    print("Reaching here ")
     result = await db.execute(select(models.Post).options(selectinload(models.Post.author)))
     posts = result.scalars().all()
     return posts
 
-router.get("/{post_id}", response_model = PostResponse)
+@router.get("/{post_id}", response_model = PostResponse)
 async def get_post(post_id: int, db: Annotated[AsyncSession, Depends(get_db)]):
     result = await db.execute(select(models.Post).options(selectinload(models.Post.author)).where(models.Post.id == post_id))
     post = result.scalars().first()
@@ -47,7 +48,7 @@ async def get_post(post_id: int, db: Annotated[AsyncSession, Depends(get_db)]):
     raise HTTPException(status_code = status.HTTP_404_NOT_FOUND, detail = "Post not found")
 
 
-router.put("/{post_id}", response_model = PostResponse)
+@router.put("/{post_id}", response_model = PostResponse)
 async def update_post(post_id: int, post_data: PostCreate, db: Annotated[AsyncSession, Depends(get_db)]):
     result = await db.execute(select(models.Post).options(selectinload(models.Post.author)).where(models.Post.id == post_id))
     post = result.scalars().first()
@@ -59,7 +60,7 @@ async def update_post(post_id: int, post_data: PostCreate, db: Annotated[AsyncSe
         result = await db.execute(select(models.user).where(models.User.id == post.user_id))
         user = result.scalars().first()
         if not user:
-            raise HTTPException(status_code = HTTP_404_NOT_FOUND, detail = "User not found")
+            raise HTTPException(status_code = status.HTTP_404_NOT_FOUND, detail = "User not found")
 
     post.title = post_data.title
     post.content = post_data.content
@@ -69,7 +70,7 @@ async def update_post(post_id: int, post_data: PostCreate, db: Annotated[AsyncSe
     await db.refresh(post, attribute_names = ["author"])
     return post
 
-router.patch("/{post_id}", response_model = PostResponse)
+@router.patch("/{post_id}", response_model = PostResponse)
 async def patch_post(post_id: int, post_data: PostUpdate, db: Annotated[AsyncSession, Depends(get_db)]):
     result = await db.execute(select(models.Post).options(selectinload(models.Post.author)).where(models.Post.id == post_id))
     post = result.scalars().first()
@@ -85,8 +86,8 @@ async def patch_post(post_id: int, post_data: PostUpdate, db: Annotated[AsyncSes
     await db.refresh(post, attribute_names = ["author"])
     return post
 
-router.delete("/{post_id}", status_code = HTTP_204_NO_CONTENT)
-async def get_post(post_id: int, db: Annotated[AsyncSession, Depends(get_db)]):
+@router.delete("/{post_id}", status_code = status.HTTP_204_NO_CONTENT)
+async def delete_post(post_id: int, db: Annotated[AsyncSession, Depends(get_db)]):
     result = await db.execute(select(models.Post).options(selectinload(models.Post.author)).where(models.Post.id == post_id))
     post = result.scalars().first()
 
